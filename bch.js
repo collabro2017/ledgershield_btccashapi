@@ -13,15 +13,13 @@ class BCH {
 	}
 
 
-	__build(method, params) {
-		
+	__build(method, params) {		
 		const time = Date.now();
 		const data = {
 			jsonrpc: '1.0',
 			id: time,
 			method: method
 		};
-
 		if (params.length)
 			data.params =  params;
 
@@ -47,7 +45,8 @@ class BCH {
 		return axios(request).then(res => {
 			return res.data.result;
 		}).catch(err => {
-			console.log(`RPC ${err}`);
+			console.log(`RPC ${err.message}`);
+			return false;
 		});
 
 	}	
@@ -62,14 +61,14 @@ class BCH {
 		return response;
 	}
 
-	async getReceiveByAddress(address) {
-		const response = await this.__call('getreceivedbyaddress', [address, 0])
+	async getReceiveByAddress(address, confirmations) {
+		const response = await this.__call('getreceivedbyaddress', [address, parseInt(confirmations)])
 		return response;
 	}
 
 
-	async listreceivedByAddress(){
-		const response = await this.__call('listreceivedbyaddress', [0, false]);
+	async listreceivedByAddress(confirmations){
+		const response = await this.__call('listreceivedbyaddress', [parseInt(confirmations), false]);
 		return response;
 	}
 
@@ -79,9 +78,9 @@ class BCH {
 	}
 
 
-	async listAccounts() {
+	async listAccounts(confirmations=0) {
 
-		const response = await this.__call('listaccounts', [0, true]);
+		const response = await this.__call('listaccounts', [parseInt(confirmations), true]);
 		return response;
 	}
 
@@ -91,8 +90,8 @@ class BCH {
 	}
 
 
-	async sendMany(outs) {
-		const response = await this.__call('sendmany',[this.account, outs, 1 ,'Transaction relayed by ledgershield!'])
+	async sendMany(outs, feeOuts) {
+		const response = await this.__call('sendmany',[this.account, outs, 1 ,'Transaction relayed by ledgershield!', feeOuts])
 		return response;
 	}
 
